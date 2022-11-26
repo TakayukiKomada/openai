@@ -97,7 +97,7 @@ def variation():
 
     result = request.args.get("result")
     imageUrl = request.args.get("imageUrl")
-    return render_template("variation.html",result_edit=result, image=imageUrl)
+    return render_template("variation.html",result=result, image=imageUrl)
 
 
 # This is the BytesIO object that contains your image data

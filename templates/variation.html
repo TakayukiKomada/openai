@@ -4,8 +4,23 @@
   <a href="/">
   <img src="{{ url_for('static', filename='dog.png') }}" class="icon" />
   </a>
+  <h3>画像バリエーション</h3>
+  <input type="hidden" name="imageUrl" value="{{ image }}">
+  <form action="/variation" method="post">
+  <input type="text" name="name" placeholder="修正したい画像のテキストをいれてください" required />
+  <input type="hidden" name="imageUrl" value="{{ image }}">
+  <input type="submit" value="修正" />
+  </form>
   {% if result %}
-  <img method="get" src={{ result_edit }} />
+  <div class="row pb-3 flex no-gutters">
+  <table class="col-12 p-1 flex row">
+    <div class="card">
+      <div class="card-body">
+        <img method="get" src={{ result }} />
+      </div>
+    </div>
+  </table>
+</div>
   {% endif %}
   
 {% endblock %}

@@ -4,7 +4,7 @@
 <a href="/">
   <img src="{{ url_for('static', filename='dog.png') }}" class="icon" />
 </a>
-<h3>画像生成</h3>
+<h3>画像修正</h3>
 <form action="/variation" method="post">
   <input type="text" name="name" placeholder="修正したい画像のテキストをいれてください" required />
   <input type="hidden" name="imageUrl" value="{{ image }}">
