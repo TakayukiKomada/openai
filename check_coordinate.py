@@ -1,58 +1,58 @@
-import cv2
-import openai
-import numpy as np
-import matplotlib.pyplot as plt
-import os
+# import cv2
+# import openai
+# import numpy as np
+# import matplotlib.pyplot as plt
+# import os
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
-x_list = []
-y_list = []
-
-
-def imgShow(imgList, row_num=1):
-    img_num = len(imgList)
-    # Matplotlibでグラフを描く際の基本パーツとしてFigureとAxesがあります。
-
-    # Figure：描画領域全体
-    # Axes：一つ一つのプロットを描く領域（座標軸）
-    if img_num == 1:
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        ax.imshow(imgList[0])
-
-    else:
-        fig, axes = plt.subplots(row_num, round(img_num / row_num))
-        ax = axes.ravel()
-        for i in range(img_num):
-            ax[i].imshow(imgList[i])
-            ax[i].set_xticks([])
-            ax[i].set_yticks([])
-
-    plt.show()
+# openai.api_key = os.getenv("OPENAI_API_KEY")
+# x_list = []
+# y_list = []
 
 
-img = cv2.imread("static/image/man.png")
-rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-# マスク画像の生成（マスク画像をかけたい画像サイズと同じ）
-mask = np.zeros(rgb.shape, dtype=np.uint8)
-cv2.rectangle(
-    rgb,
-    (255, 126),
-    (377, 296),
-    (255, 255, 255),
-    -1,
-)
-imgShow([rgb])
-cv2.imwrite("static/image/rgb.png", rgb)
-url = "static/image/rgb.png"
-response = openai.Image.create_edit(
-    image=open("static/image/man.png", "rb"),
-    mask=open(url, "rb"),
-    prompt="A sunlit indoor lounge area with a pool containing a flamingo",
-    n=1,
-    size="512x512",
-)
-image_url = response["data"][0]["url"]
+# def imgShow(imgList, row_num=1):
+#     img_num = len(imgList)
+#     # Matplotlibでグラフを描く際の基本パーツとしてFigureとAxesがあります。
+
+#     # Figure：描画領域全体
+#     # Axes：一つ一つのプロットを描く領域（座標軸）
+#     if img_num == 1:
+#         fig = plt.figure()
+#         ax = fig.add_subplot(111)
+#         ax.imshow(imgList[0])
+
+#     else:
+#         fig, axes = plt.subplots(row_num, round(img_num / row_num))
+#         ax = axes.ravel()
+#         for i in range(img_num):
+#             ax[i].imshow(imgList[i])
+#             ax[i].set_xticks([])
+#             ax[i].set_yticks([])
+
+#     plt.show()
+
+
+# img = cv2.imread("static/image/man.png")
+# rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+# # マスク画像の生成（マスク画像をかけたい画像サイズと同じ）
+# mask = np.zeros(rgb.shape, dtype=np.uint8)
+# cv2.rectangle(
+#     rgb,
+#     (255, 126),
+#     (377, 296),
+#     (255, 255, 255),
+#     -1,
+# )
+# imgShow([rgb])
+# cv2.imwrite("static/image/rgb.png", rgb)
+# url = "static/image/rgb.png"
+# response = openai.Image.create_edit(
+#     image=open("static/image/man.png", "rb"),
+#     mask=open(url, "rb"),
+#     prompt="A sunlit indoor lounge area with a pool containing a flamingo",
+#     n=1,
+#     size="512x512",
+# )
+# image_url = response["data"][0]["url"]
 
 
 # def onMouse(event, x, y, flags, params):

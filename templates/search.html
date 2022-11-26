@@ -1,21 +1,32 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<img src="{{ url_for('static', filename='dog.png') }}" class="icon" />
-<h3>画像生成</h3>
-<form action="/update" method="post">
-  <input type="text" name="animal" placeholder="作りたい画像の名前を入れてください" required />
-  <input class="input" type="submit" value="生  成" />
-</form>
-<h3>画像検索</h3>
-  <form action="/search" method="post">
-    <input id="search1" type="text" name="search1" placeholder="検索したい言葉を入力してください">
-    <input class="input" type="submit" value="検  索">
-  </form>
+<a href="/">
+  <img src="{{ url_for('static', filename='dog.png') }}" class="icon" />
+</a>
+<div class="container">
+  <div class="row">
+    <div class="col-6">
+      <h3 class="text-center">画像検索</h3>
+      <form action="/search" method="post">
+        <input type="text" name="search" placeholder="検索したい言葉を入力してください">
+        <input class="input" type="submit" value="検  索">
+      </form>
+    </div>
+    <div class="col-6">
+      <h3 class="text-center">画像生成</h3>
+      <form action="/update" method="post">
+        <input type="text" name="animal" placeholder="作りたい画像の名前を入れてください" required />
+        <input class="input" type="submit" value="生  成" />
+      </form>
+    </div>
+  </div>
+</div>
+
 {% for i in imagelist %}
 <div class="row pb-3 flex no-gutters">
-  <table class="col-12 p-1 flex row">
-    <div class="card">
+  <table class="p-1 flex row col-4">
+    <div class="card ">
       <div class="card-body">
         <img width="350" height="350" src="{{ url_for('static', filename=i)}}" class="row">
       </div>

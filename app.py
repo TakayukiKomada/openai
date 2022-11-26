@@ -10,10 +10,13 @@ from flask import Flask, redirect, render_template, request, url_for
 from time import sleep
 import random
 import io
-import cv2
 from io import BytesIO
+import cv2
+from config import Image2
 
-
+BASE_PATH = (
+    "C:/Users/takak/camp/python/zisyuseisekku/openai-quickstart-python/static/image/"
+)
 app = Flask(__name__)
 
 x_list = []
@@ -31,10 +34,11 @@ def index():
     return render_template("index.html", imagelist=IMG_LIST)
 
 
-@app.route("/search", methods=["post"])
-def search1():
-    search = request.form["search1"]
-    if search in os.listdir("static/image"):
+@app.route("/search", methods=["POST"])
+def search():
+    if request.method == "POST":
+        search = request.form["search"]
+        Image2.select().where(Image2.name.contains(search))
         IMG_LIST = os.listdir("static/image")
         IMG_LIST = ["image/" + i for i in IMG_LIST]
         return render_template("search.html", imagelist=IMG_LIST)
@@ -54,6 +58,12 @@ def update():
         animal2 = random.sample(range(10000), 1)
         sleep(10)
         img.save(f"static/image/imagesout_color_{animal}{animal2}.png", "PNG")
+        file_name = f"imagesout_color_{animal}{animal2}.png"
+        image = BASE_PATH + file_name
+        Image2.create(
+            name=animal,
+            image=image,
+        )
 
         return redirect(url_for("update", result=image_url))
 
