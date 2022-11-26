@@ -9,7 +9,9 @@ import openai
 from flask import Flask, redirect, render_template, request, url_for
 from time import sleep
 import random
+import io
 import cv2
+from io import BytesIO
 
 
 app = Flask(__name__)
@@ -24,27 +26,51 @@ openai.Model.list()
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    IMG_LIST = os.listdir("static/image")
+    IMG_LIST = ["image/" + i for i in IMG_LIST]
+    return render_template("index.html", imagelist=IMG_LIST)
+
+
+@app.route("/search", methods=["post"])
+def search1():
+    search = request.form["search1"]
+    if search in os.listdir("static/image"):
+        IMG_LIST = os.listdir("static/image")
+        IMG_LIST = ["image/" + i for i in IMG_LIST]
+        return render_template("search.html", imagelist=IMG_LIST)
 
 
 @app.route("/update", methods=("GET", "POST"))
 def update():
     if request.method == "POST":
         animal = request.form["animal"]
-        response = openai.Image.create(prompt=animal, n=1, size="1024x1024")
+        response = openai.Image.create(prompt=animal, n=1, size="512x512")
         image_url = response["data"][0]["url"]
-        with urllib.request.urlopen(image_url) as web_file:
-            image = Image.open(web_file)
-            sleep(10)
-            animal2 = random.sample(range(10000), 1)
-            image.save(f"static/image/imagesout_color_{animal}{animal2}.png")
-            # web_file.save(static/images/imagesout_color.png)
+        # 画像データを取得する
+        img_in = urllib.request.urlopen(image_url).read()
+        img_bin = io.BytesIO(img_in)
+        # Pillowで開き、画像を保存する
+        img = Image.open(img_bin)
+        animal2 = random.sample(range(10000), 1)
+        sleep(10)
+        img.save(f"static/image/imagesout_color_{animal}{animal2}.png", "PNG")
 
         return redirect(url_for("update", result=image_url))
 
     result = request.args.get("result")
     return render_template("update.html", result=result)
 
+
+# @app.route("/tweak", methods=("GET", "POST"))
+# def tweak():
+# # This is the BytesIO object that contains your image data
+#     byte_stream: BytesIO = [your image data]
+#     byte_array = byte_stream.getvalue()
+#     response = openai.Image.create_variation(
+#     image=byte_array,
+#     n=1,
+#     size="512x512"
+#     )
 
 # # 出力先のパスを生成
 # @app.route("/edit", methods=("GET", "POST"))
@@ -74,29 +100,29 @@ def update():
 #         (255, 255, 255),
 #         -1,
 #     )
-    # 画像の合成
-    rgb_and = cv2.bitwise_and(rgb, mask)
-    # 画像の表示
-    imgShow(rgb_and)
-    # waitKey(0)で画像上で何かしらのキーを押せば閉じられるようにする
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    # openai.Image.create_edit(
-    #     image1=open('static/image/man.png', "rb"),
-    #     mask=open("mask.png", "rb"),
-    #     prompt="A cute baby sea otter wearing a beret",
-    #     n=1,
-    #     size="1024x1024"
-    # )
-    # image_url2 = response["data"][0]["url"]
-    # with urllib.request.urlopen(image_url2) as web_file:
-    #         image = Image.open(web_file)
-    #         sleep(10)
-    #         animal2 = random.sample(range(10000), 1)
-    #         image.save(f"static/image/imagesout_color_{animal2}.png")
+# 画像の合成
+# rgb_and = cv2.bitwise_and(rgb, mask)
+# # 画像の表示
+# imgShow(rgb_and)
+# # waitKey(0)で画像上で何かしらのキーを押せば閉じられるようにする
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
+# openai.Image.create_edit(
+#     image1=open('static/image/man.png', "rb"),
+#     mask=open("mask.png", "rb"),
+#     prompt="A cute baby sea otter wearing a beret",
+#     n=1,
+#     size="1024x1024"
+# )
+# image_url2 = response["data"][0]["url"]
+# with urllib.request.urlopen(image_url2) as web_file:
+#         image = Image.open(web_file)
+#         sleep(10)
+#         animal2 = random.sample(range(10000), 1)
+#         image.save(f"static/image/imagesout_color_{animal2}.png")
 
-    # result = request.args.get("result")
-    # return render_template("edit.html", result=result)
+# result = request.args.get("result")
+# return render_template("edit.html", result=result)
 
 
 if __name__ == "__main__":

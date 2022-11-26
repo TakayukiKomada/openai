@@ -8,15 +8,7 @@
     <input type="submit" value="生成" />
   </form>
   {% if result %}
-  <div class="row pb-3 flex no-gutters">
-  <table class="col-12 p-1 flex row">
-    <div class="card">
-      <div class="card-body">
-  <img method="get" src={{ result }} />
-      </div>
-    </div>
-  </table>
-</div>
+  <img method="get" src={{ result_edit }} />
   {% endif %}
   <form action="/edit" method="post">
     <input type="submit" value="編集" />
