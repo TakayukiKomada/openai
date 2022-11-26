@@ -14,9 +14,7 @@ from io import BytesIO
 import cv2
 from config import Image2
 
-BASE_PATH = (
-    "C:/Users/takak/camp/python/zisyuseisekku/openai-quickstart-python/static/image/"
-)
+BASE_PATH = "static/image/"
 app = Flask(__name__)
 
 x_list = []
@@ -38,10 +36,10 @@ def index():
 def search():
     if request.method == "POST":
         search = request.form["search"]
-        Image2.select().where(Image2.name.contains(search))
+        imagelist = Image2.select().where(Image2.name.contains(search))
         IMG_LIST = os.listdir("static/image")
         IMG_LIST = ["image/" + i for i in IMG_LIST]
-        return render_template("search.html", imagelist=IMG_LIST)
+        return render_template("search.html", imagelist=imagelist)
 
 
 @app.route("/update", methods=("GET", "POST"))
@@ -65,11 +63,44 @@ def update():
             image=image,
         )
 
-        return redirect(url_for("update", result=image_url))
+        return redirect(url_for("update", result=image_url, imageUrl=image))
 
     result = request.args.get("result")
-    return render_template("update.html", result=result)
+    imageUrl = request.args.get("imageUrl")
+    return render_template("update.html", result=result, image=imageUrl)
 
+
+@app.route("/variation", methods=("GET", "POST"))
+def variation():
+    if request.method == "POST":
+        name = request.form["name"]
+        image = request.form["imageUrl"]
+        response = openai.Image.create_variation(
+            image=open(image, "rb"), n=1, size="512x512"
+        )
+        image_url = response["data"][0]["url"]
+        # 画像データを取得する
+        img_in = urllib.request.urlopen(image_url).read()
+        img_bin = io.BytesIO(img_in)
+        # Pillowで開き、画像を保存する
+        img = Image.open(img_bin)
+        animal2 = random.sample(range(10000), 1)
+        sleep(10)
+        img.save(f"static/image/imagesout_color_{name}{animal2}.png", "PNG")
+        file_name = f"imagesout_color_{name}{animal2}.png"
+        image = BASE_PATH + file_name
+        Image2.create(
+            name=name,
+            image=image,
+        )
+        return redirect(url_for("variation", result=image_url, imageUrl=image))
+
+    result = request.args.get("result")
+    imageUrl = request.args.get("imageUrl")
+    return render_template("variation.html",result_edit=result, image=imageUrl)
+
+
+# This is the BytesIO object that contains your image data
 
 # @app.route("/tweak", methods=("GET", "POST"))
 # def tweak():
