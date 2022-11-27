@@ -6,8 +6,7 @@
   </a>
   <h3>画像バリエーション</h3>
   <input type="hidden" name="imageUrl" value="{{ image }}">
-  <form action="/variation" method="post">
-  <!-- <input type="text" name="name" placeholder="修正したい画像のテキストをいれてください" required /> -->
+  <form action="/variationid/<id>" method="post">
   <input type="hidden" name="name" value="{{ name }}" required />
   <input type="submit" value="修正" />
   </form>
@@ -16,7 +15,7 @@
   <table class="col-12 p-1 flex row">
     <div class="card">
       <div class="card-body">
-        <img method="get" src={{ result }} />
+        <img method="get" src={{ i.image }} />
       </div>
     </div>
   </table>

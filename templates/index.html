@@ -28,7 +28,9 @@
   <table class="p-1 flex row col-4">
     <div class="card ">
       <div class="card-body">
-        <img width="350" height="350" src="{{ url_for('static', filename=i)}}" class="row">
+        <a href="/variationid/{{ i.id }}">
+          <img width="350" height="350" src="{{ i.image }}" class="row">
+        </a>
       </div>
     </div>
   </table>

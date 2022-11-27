@@ -6,8 +6,9 @@
 </a>
 <h3>画像修正</h3>
 <form action="/variation" method="post">
-  <input type="text" name="name" placeholder="修正したい画像のテキストをいれてください" required />
+  <!-- <input type="text" name="name" placeholder="修正したい画像のテキストをいれてください" required /> -->
   <input type="hidden" name="imageUrl" value="{{ image }}">
+  <input type="hidden" name="name" value="{{ name }}">
   <input type="submit" value="修正" />
 </form>
 {% if result %}

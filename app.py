@@ -27,9 +27,13 @@ openai.Model.list()
 
 @app.route("/")
 def index():
-    IMG_LIST = os.listdir("static/image")
-    IMG_LIST = ["image/" + i for i in IMG_LIST]
-    return render_template("index.html", imagelist=IMG_LIST)
+    # IMG_LIST = os.listdir("static/image")
+    # IMG_LIST = ["image/" + i for i in IMG_LIST]
+    # return render_template("index.html", imagelist=IMG_LIST)
+
+    query = Image2.select()
+    query_result = query.execute()
+    return render_template("index.html", imagelist=query_result)
 
 
 @app.route("/search", methods=["POST"])
@@ -93,11 +97,43 @@ def variation():
             name=name,
             image=image,
         )
-        return redirect(url_for("variation", result=image_url, imageUrl=image))
+        return redirect(
+            url_for("variation", result=image_url, imageUrl=image, name=name)
+        )
 
     result = request.args.get("result")
     imageUrl = request.args.get("imageUrl")
-    return render_template("variation.html",result=result, image=imageUrl)
+    name = request.args.get("name")
+
+    return render_template("variation.html", result=result, image=imageUrl, name=name)
+
+
+@app.route("/variationid/<id>", methods=("GET", "POST"))
+def variationid(id):
+    if request.method == "POST":
+        img = Image2.get(id=id)
+        name = img.name
+        response = openai.Image.create_variation(
+            image=open(img.image, "rb"), n=1, size="512x512"
+        )
+        image_url = response["data"][0]["url"]
+        img_in = urllib.request.urlopen(image_url).read()
+        img_bin = io.BytesIO(img_in)
+        # Pillowで開き、画像を保存する
+        img2 = Image.open(img_bin)
+        animal2 = random.sample(range(10000), 1)
+        sleep(10)
+        img2.save(f"static/image/imagesout_color_{name}{animal2}.png", "PNG")
+        file_name = f"imagesout_color_{name}{animal2}.png"
+        image = BASE_PATH + file_name
+        Image2.create(
+            name=name,
+            image=image,
+        )
+        return redirect(url_for("variationid", result=image_url))
+    result = request.args.get("result")
+    imageUrl = request.args.get("image")
+    return render_template("variationid.html", result=result, image=imageUrl)
 
 
 # This is the BytesIO object that contains your image data
